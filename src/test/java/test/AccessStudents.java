@@ -1,29 +1,55 @@
 package test;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
 
-public class Intranet {
+public class AccessStudents {
 
     public WebDriver driver;
 
     @Test
-    public void intranet()
-    {
+    public void test() throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
         driver = new ChromeDriver();
-        driver.get("https://intranet.unitbv.ro/autentificare?returnurl=%2f");
+        driver.get("https://www.unitbv.ro/");
         driver.manage().window().maximize();
 
-        WebElement fillEmailField = driver.findElement(By.cssSelector("input[id='dnn_ctr2093_Login_Login_LDAP UNITBV_lgAGSISPortalLogin_UserName']"));
+        By clickCookie = By.xpath("//div[@class='cookie-consent-footer-content']//button[contains(@class,'cookie-consent')]");
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(clickCookie));
+        WebElement clickOk = driver.findElement(clickCookie);
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", clickOk);
+
+        String actualText = driver.getTitle();
+        String expectedText = "UniTBv";
+        Assert.assertEquals(expectedText, actualText);
+
+        Thread.sleep(5);
+        By waitPlatforme = By.cssSelector("ul>li[id='iceMenu_773']");
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(waitPlatforme));
+        WebElement hoverOverPlatforme = driver.findElement(waitPlatforme);
+        Actions builder = new Actions(driver);
+        Thread.sleep(1000);
+        builder.moveToElement(hoverOverPlatforme).perform();
+        Actions action = new Actions(driver);
+        Thread.sleep(1000);
+        action.moveToElement(hoverOverPlatforme).moveToElement(driver.findElement(By.cssSelector("li>a[href='https://intranet.unitbv.ro/']"))).click().build().perform();
+
+        By waitEmailField = By.cssSelector("input[id='dnn_ctr2093_Login_Login_LDAP UNITBV_lgAGSISPortalLogin_UserName']");
+//        new WebDriverWait(driver, Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(waitEmailField));
+        Thread.sleep(1000);
+        WebElement fillEmailField = driver.findElement(waitEmailField);
         String emailValue = "laura.lucea@student.unitbv.ro";
         fillEmailField.sendKeys(emailValue);
 
@@ -63,10 +89,8 @@ public class Intranet {
         selectProgramStudii.click();
 
         List<WebElement> selectAnStudii = driver.findElements(By.id("dnn_ctr1884_GrupeStudenti_FDSG1_ddlAnStudiu"));
-        for (Integer i=0; i<selectAnStudii.size(); i++)
-        {
-            if (selectAnStudii.get(i).getText().equals("II"))
-            {
+        for (Integer i = 0; i < selectAnStudii.size(); i++) {
+            if (selectAnStudii.get(i).getText().equals("II")) {
                 selectAnStudii.get(i).click();
             }
         }
@@ -79,10 +103,8 @@ public class Intranet {
 
         List<WebElement> verifyMyName = driver.findElements(By.cssSelector("td>div[class='A93ce46954f814d1eb54c49d791f9036c48']"));
         Integer ok = 0;
-        for (Integer i=0; i<verifyMyName.size(); i++)
-        {
-            if (verifyMyName.get(i).getText().equals("laura.lucea@student.unitbv.ro"))
-            {
+        for (Integer i = 0; i < verifyMyName.size(); i++) {
+            if (verifyMyName.get(i).getText().equals("laura.lucea@student.unitbv.ro")) {
                 ok = 1;
             }
             System.out.println(ok);
@@ -92,13 +114,11 @@ public class Intranet {
 
     }
 
-    public void downloadOptions(String fileFormat)
-    {
+    public void downloadOptions(String fileFormat) {
         WebElement saveElement = driver.findElement(By.id("dnn_ctr1884_GrupeStudenti_ReportViewer1_ctl05_ctl04_ctl00_ButtonImgDown"));
         saveElement.click();
 
-        switch (fileFormat)
-        {
+        switch (fileFormat) {
             case "Excel":
                 WebElement saveAsExcel = driver.findElement(By.cssSelector("a[title='Excel']"));
                 saveAsExcel.click();
@@ -112,8 +132,6 @@ public class Intranet {
                 saveAsWord.click();
                 break;
         }
+
     }
-
 }
-
-
