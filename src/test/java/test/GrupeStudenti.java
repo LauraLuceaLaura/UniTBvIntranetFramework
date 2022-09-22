@@ -9,6 +9,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import shareData.Hooks;
 
+//asta aproape merge
+
 public class GrupeStudenti  extends Hooks{
 
     public WebDriver driver;
